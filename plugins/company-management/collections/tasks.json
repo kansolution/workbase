@@ -239,6 +239,12 @@
           "fieldNames": { "label": "nickname", "value": "id" }
         }
       }
+    },
+    {
+      "type": "sort",
+      "name": "sort",
+      "hidden": true,
+      "interface": "sort"
     }
   ]
 }
