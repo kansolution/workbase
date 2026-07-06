@@ -29,6 +29,23 @@ tương ứng với nhóm "Tổ chức & Con người" trong
   collection `13. projects` (B.5), đủ để `tasks.project` (association) resolve
   được khi import. Sẽ thay bằng bản đầy đủ (product_group, key_result,
   manager, members, tasks o2m...) ở session dựng nhóm "Dự án / Chiến dịch".
+- `objectives.json` — nhóm "OKR" (B.2), collection `6. objectives`.
+  `parent_objective` tự tham chiếu (`objectives`) để phân rã Công ty → Phòng
+  ban → Team. `progress_percent` là field số thường (không phải Formula field
+  thật của NocoBase — rollup có trọng số cần đọc dữ liệu từ collection khác
+  `key_results` nên phải do workflow ghi đè ở Session 7, không phải công thức
+  tính trong-record), mặc định `0`, đánh dấu `x-read-pretty` vì không cho nhập
+  tay. Có field `sort` (`hidden`, `scopeKey: "status"`) giống `tasks.json` để
+  Kanban group theo `status` kéo-thả được — xem lưu ý về `scopeKey` trong
+  Nhật ký CLAUDE.md phiên 3.
+- `key_results.json` — collection `7. key_results` (B.2), `objective` là
+  `belongsTo` → `objectives`, `linked_project` là `belongsTo` → `projects`
+  (nullable, vì chưa chắc mỗi KR đều gắn dự án). Có field ẩn
+  `is_manual_input` (`checkbox`, mặc định `false`) — KR nào được phép nhập
+  tay `current_value` (thường chỉ áp dụng cấp Công ty); KR cấp Team/Phòng ban
+  sẽ luôn bị rollup tự động ghi đè ở Session 7, field này chỉ đánh dấu để
+  ràng buộc UI (linkage rule) làm ở session sau, chưa áp dụng ràng buộc thật
+  trong session này.
 
 ## Cách nạp vào plugin
 

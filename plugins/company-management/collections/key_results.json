@@ -1,0 +1,153 @@
+{
+  "name": "key_results",
+  "title": "Kết quả chủ chốt (Key Result)",
+  "uiManageable": true,
+  "fields": [
+    {
+      "type": "belongsTo",
+      "name": "objective",
+      "target": "objectives",
+      "foreignKey": "objectiveId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Mục tiêu",
+        "required": true,
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "title", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "string",
+      "name": "title",
+      "interface": "input",
+      "uiSchema": {
+        "type": "string",
+        "title": "Tiêu đề",
+        "x-component": "Input",
+        "required": true
+      }
+    },
+    {
+      "type": "string",
+      "name": "metric_type",
+      "interface": "select",
+      "uiSchema": {
+        "type": "string",
+        "title": "Loại chỉ số",
+        "x-component": "Select",
+        "required": true,
+        "enum": [
+          { "label": "Doanh thu", "value": "Doanh thu", "color": "green" },
+          { "label": "Ngân sách", "value": "Ngân sách", "color": "gold" },
+          { "label": "Dự án chiến lược", "value": "Dự án chiến lược", "color": "blue" },
+          { "label": "Chiến dịch chiến lược", "value": "Chiến dịch chiến lược", "color": "purple" }
+        ]
+      }
+    },
+    {
+      "type": "double",
+      "name": "target_value",
+      "interface": "number",
+      "uiSchema": {
+        "type": "number",
+        "title": "Giá trị mục tiêu",
+        "x-component": "InputNumber",
+        "x-component-props": { "min": 0 }
+      }
+    },
+    {
+      "type": "double",
+      "name": "current_value",
+      "defaultValue": 0,
+      "interface": "number",
+      "uiSchema": {
+        "type": "number",
+        "title": "Giá trị hiện tại",
+        "description": "Cập nhật thủ công (nếu is_manual_input = true) hoặc tự động qua workflow từ Projects/KPI",
+        "x-component": "InputNumber",
+        "default": 0,
+        "x-component-props": { "min": 0 }
+      }
+    },
+    {
+      "type": "string",
+      "name": "unit",
+      "interface": "select",
+      "uiSchema": {
+        "type": "string",
+        "title": "Đơn vị",
+        "x-component": "Select",
+        "enum": [
+          { "label": "VNĐ", "value": "VNĐ", "color": "green" },
+          { "label": "%", "value": "%", "color": "blue" },
+          { "label": "Số lượng", "value": "Số lượng", "color": "default" }
+        ]
+      }
+    },
+    {
+      "type": "double",
+      "name": "weight",
+      "interface": "number",
+      "uiSchema": {
+        "type": "number",
+        "title": "Trọng số",
+        "description": "Tổng trọng số các KR trong 1 Objective = 100%",
+        "x-component": "InputNumber",
+        "x-component-props": { "min": 0, "max": 100, "addonAfter": "%" }
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "linked_project",
+      "target": "projects",
+      "foreignKey": "linkedProjectId",
+      "targetKey": "id",
+      "allowNull": true,
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Dự án liên kết",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "name", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "string",
+      "name": "status",
+      "interface": "select",
+      "defaultValue": "Đang theo dõi",
+      "uiSchema": {
+        "type": "string",
+        "title": "Trạng thái",
+        "x-component": "Select",
+        "default": "Đang theo dõi",
+        "enum": [
+          { "label": "Đang theo dõi", "value": "Đang theo dõi", "color": "blue" },
+          { "label": "Đạt", "value": "Đạt", "color": "green" },
+          { "label": "Rủi ro", "value": "Rủi ro", "color": "gold" },
+          { "label": "Không đạt", "value": "Không đạt", "color": "red" }
+        ]
+      }
+    },
+    {
+      "type": "boolean",
+      "name": "is_manual_input",
+      "hidden": true,
+      "defaultValue": false,
+      "interface": "checkbox",
+      "uiSchema": {
+        "type": "boolean",
+        "title": "Cho phép nhập tay",
+        "description": "Đánh dấu KR được phép nhập current_value thủ công (thường chỉ cấp Công ty). Dùng cho ràng buộc UI ở session sau.",
+        "x-component": "Checkbox",
+        "default": false
+      }
+    }
+  ]
+}
