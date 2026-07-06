@@ -6,8 +6,8 @@ import { registerTaskCheckinAutoGeneration } from './task-checkin-schedule';
 export class CompanyManagementPlugin extends Plugin {
   async load() {
     await this.importCollections(path.resolve(__dirname, '../../collections'));
-    registerCycleAutoGeneration(this);
-    registerTaskCheckinAutoGeneration(this);
+    registerCycleAutoGeneration(this as any);
+    registerTaskCheckinAutoGeneration(this as any);
   }
 }
 
