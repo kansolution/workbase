@@ -108,10 +108,8 @@ Lưu ý quan trọng đã rút ra khi scaffold plugin lần đầu (2026-07-06):
 
 - `app/.env` chứa secret thật (APP_KEY, DB_PASSWORD) — **không commit**, đã
   gitignore. Mỗi máy/VPS tự có file `.env` riêng.
-- ⚠️ **Tài khoản Root mặc định của NocoBase trên VPS** (`username: nocobase`,
-  `password: admin123` — mặc định của NocoBase, không phải do dự án đặt)
-  **chưa được đổi mật khẩu**. Đây là rủi ro bảo mật cao vì site public qua
-  HTTPS. Cần đổi ngay khi có thể.
+- Tài khoản Root mặc định của NocoBase (`nocobase` / `admin123`) đã được đổi
+  mật khẩu (2026-07-06, phiên 3) — không còn dùng mật khẩu mặc định.
 - Tài khoản `admin` (do user tạo qua UI) đã được gán role `admin` thủ công
   qua DB (bảng `rolesUsers`), vì role mặc định `member` không có quyền UI
   Editor.
@@ -119,6 +117,50 @@ Lưu ý quan trọng đã rút ra khi scaffold plugin lần đầu (2026-07-06):
 ## Nhật ký tiến độ
 
 (mới nhất ở trên)
+
+- **2026-07-06 (phiên 3)**: Bật plugin lên production lần đầu làm sập cả
+  admin app ("Script error" RequireJS) vì plugin chỉ có code server, thiếu
+  hẳn `dist/client/index.js` — client admin cố tải bundle này cho MỌI plugin
+  đang enable và crash cứng nếu thiếu. Đã tắt plugin ngay để cứu app, viết
+  tay 1 UMD module tối thiểu (`src/client/index.js` + `dist/client/index.js`
+  + `client.js` shim ở root, xem code — không có bundler nên viết tay UMD
+  thay vì build) export `{ default: class extends clientLib.Plugin {} }`,
+  bật lại plugin, ổn định trở lại.
+
+  Sau đó phát hiện thêm: dù bảng đã tạo trong Postgres, chúng **không hiện**
+  trong Settings > Data sources > Collections UI — vì `db.import()` không tự
+  ghi vào bảng metadata `collections`/`fields` mà UI đó đọc; phải set
+  `"uiManageable": true` trên từng collection JSON **và** tự gọi
+  `db.getRepository('collections').db2cmCollections([...])` trong `load()`
+  (nút "Sync from database" trên UI **không** bắt được, vì nó chỉ dò bảng SQL
+  chưa có Sequelize collection tương ứng — collection của ta thì có rồi nên
+  bị bỏ qua). Quan trọng hơn: `db2cm()` là **no-op nếu collection đã có sẵn
+  trong metadata** — nghĩa là field thêm sau (như `sort` bên dưới) sẽ không
+  tự động được đồng bộ; đã thêm logic backfill field thiếu vào `load()` để
+  tự xử lý việc này ở mọi lần khởi động, tránh phải vá tay SQL lần sau.
+
+  Dựng xong trang "Công việc của tôi" qua Admin UI (Kanban + Calendar + Bảng
+  quản lý cho `tasks`, Calendar + Kanban cho `task_checkins`), theo
+  `plugins/company-management/docs/tasks-page-setup.md`. Vướng thêm 1 vấn đề
+  kéo-thả Kanban không hoạt động: NocoBase Kanban cần 1 field kiểu `sort`
+  trên collection, và field đó phải có `scopeKey` khớp đúng tên group field
+  (ở đây `"scopeKey": "status"`) thì mới hiện trong dropdown "Drag and drop
+  sorting field" — thiếu 1 trong 2 điều kiện này thì kéo thả im lặng không
+  hoạt động (không báo lỗi gì, chỉ bôi đen chữ như khi bấm chọn text bình
+  thường). Đã thêm field `sort` (`hidden: true`, `interface: "sort"`,
+  `scopeKey: "status"`) vào `collections/tasks.json`.
+
+  Bỏ qua 1 yêu cầu nhỏ trong design doc: ẩn/hiện field `pause_reason` theo
+  điều kiện `status` qua "Linkage rules" — bản NocoBase này chỉ cho ẩn/hiện
+  **cả block** qua linkage rule ở block level, không có sẵn action ẩn/hiện
+  từng field riêng (phải viết JS tùy chỉnh qua "Execute JavaScript", chưa
+  làm). Field `pause_reason` hiện luôn hiện trên form, không gây hại gì (để
+  trống khi task không bị dừng).
+
+  Seed dữ liệu demo cho `tasks` (8 task) và `task_checkins` (9 lượt) qua SQL
+  trực tiếp để test UI (không phải qua `scripts/seed-org.ts`, script đó vẫn
+  chưa test — xem TODO). Cũng đổi mật khẩu tài khoản root NocoBase mặc định
+  (`nocobase`/`admin123`) — xong, xem mục Bảo mật.
 
 - **2026-07-06 (phiên 2)**: Phát hiện và cứu một phiên làm việc trước đó bị bỏ
   dở trực tiếp trên VPS (chưa commit): tài liệu thiết kế đầy đủ
@@ -145,11 +187,9 @@ Lưu ý quan trọng đã rút ra khi scaffold plugin lần đầu (2026-07-06):
 
 ## Việc tiếp theo (TODO)
 
-- [ ] **Ưu tiên cao**: đổi mật khẩu tài khoản root mặc định của NocoBase
-      (`nocobase` / `admin123`) trên VPS
-- [ ] Xây trang UI (Kanban/Calendar/Table/Form) cho `tasks`/`task_checkins`
-      theo `plugins/company-management/docs/tasks-page-setup.md` (đã viết
-      sẵn hướng dẫn, chưa làm qua Admin UI)
+- [ ] (Tuỳ chọn) Ẩn/hiện field `pause_reason` theo `status` trên form task —
+      cần viết JS tuỳ chỉnh qua "Execute JavaScript" trong Block linkage
+      rules (bản NocoBase này không có action ẩn/hiện field riêng lẻ có sẵn)
 - [ ] Dựng nhóm OKR (`objectives`, `key_results`) — bước 3 trong thứ tự triển
       khai đề xuất (Phần G của design doc)
 - [ ] Dựng nhóm KPI (`kpi_registrations`, `kpi_summaries`) + workflow duyệt
@@ -158,4 +198,5 @@ Lưu ý quan trọng đã rút ra khi scaffold plugin lần đầu (2026-07-06):
       manager, members, tasks o2m) — bước 5, xem note trong
       `collections/README.md`
 - [ ] Test thử `scripts/seed-org.ts` để seed dữ liệu mẫu cho nhóm Tổ chức &
-      Con người
+      Con người (hiện đang seed tasks/task_checkins demo bằng SQL tay, xem
+      nhật ký phiên 3)
