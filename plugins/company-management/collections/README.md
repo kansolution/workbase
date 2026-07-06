@@ -22,17 +22,10 @@ tương ứng với nhóm "Tổ chức & Con người" trong
   dùng interface `createdBy` (tự điền người tạo, read-only trên UI).
 - `task_checkins.json` — collection `12. task_checkins` (lượt thực hiện của
   task định kỳ), `task` là `belongsTo` → `tasks`.
-
-  **Lưu ý phụ thuộc `projects`:** `tasks.project` là `belongsTo` →
-  `projects` (`allowNull: true`), nhưng collection `projects` (B.5) **chưa
-  được tạo trong repo này** — sẽ làm ở session sau. NocoBase resolve field
-  association tại thời điểm collection được đăng ký, nên nếu bật plugin và
-  chạy `importCollections()` trước khi `projects` tồn tại (dù chỉ là stub
-  `{ "name": "projects", "fields": [] }`), import `tasks.json` sẽ lỗi vì
-  không tìm thấy target collection. Hai lựa chọn:
-  1. Tạo trước một `collections/projects.json` tối thiểu (chỉ `name`) làm
-     placeholder, rồi thay bằng bản đầy đủ ở session B.5; hoặc
-  2. Tạm comment field `project` trong `tasks.json` cho tới khi B.5 xong.
+- `projects.json` — **placeholder tối thiểu** (chỉ `name` + `title`) cho
+  collection `13. projects` (B.5), đủ để `tasks.project` (association) resolve
+  được khi import. Sẽ thay bằng bản đầy đủ (product_group, key_result,
+  manager, members, tasks o2m...) ở session dựng nhóm "Dự án / Chiến dịch".
 
 ## Cách nạp vào plugin
 

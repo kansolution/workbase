@@ -11,6 +11,11 @@ node_modules/
 dist/
 .pnpm-store/
 
+# company-management plugin has no CI build step (production container lacks
+# a TypeScript toolchain), so its compiled output is committed deliberately.
+!plugins/company-management/dist/
+!plugins/company-management/dist/**
+
 # Logs
 *.log
 npm-debug.log*

@@ -1,0 +1,9 @@
+{
+  "name": "company-management",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/server/index.js",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

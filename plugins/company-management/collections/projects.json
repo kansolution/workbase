@@ -1,0 +1,17 @@
+{
+  "name": "projects",
+  "title": "Dự án",
+  "fields": [
+    {
+      "type": "string",
+      "name": "name",
+      "interface": "input",
+      "uiSchema": {
+        "type": "string",
+        "title": "Tên dự án",
+        "x-component": "Input",
+        "required": true
+      }
+    }
+  ]
+}
