@@ -30,9 +30,28 @@ export class CompanyManagementPlugin extends Plugin {
     // these collections -- so their auto-sync into the collection-manager
     // metadata (Settings > Data sources UI) misses them. Trigger it here
     // explicitly instead, so it doesn't depend on that event ordering.
+    //
+    // db2cm() is a no-op once a collection's metadata row already exists,
+    // so it never picks up fields added *after* the first sync (e.g. the
+    // `sort` field added later for Kanban drag-and-drop) -- backfill any
+    // missing field rows for those ourselves too.
     const collectionsRepo = this.db.getRepository('collections') as any;
-    if (typeof collectionsRepo?.db2cmCollections === 'function') {
-      await collectionsRepo.db2cmCollections(UI_MANAGEABLE_COLLECTIONS);
+    const fieldsRepo = this.db.getRepository('fields') as any;
+    for (const name of UI_MANAGEABLE_COLLECTIONS) {
+      const alreadySynced = await collectionsRepo.findOne({ filter: { name } });
+      if (!alreadySynced) {
+        if (typeof collectionsRepo?.db2cmCollections === 'function') {
+          await collectionsRepo.db2cmCollections([name]);
+        }
+        continue;
+      }
+      const collection = this.db.getCollection(name);
+      for (const [fieldName, field] of collection.fields) {
+        const fieldSynced = await fieldsRepo.findOne({ filter: { collectionName: name, name: fieldName } });
+        if (!fieldSynced) {
+          await fieldsRepo.create({ values: { collectionName: name, name: fieldName, ...field.options } });
+        }
+      }
     }
 
     registerCycleAutoGeneration(this as any);

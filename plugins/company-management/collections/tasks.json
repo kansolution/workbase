@@ -244,7 +244,14 @@
       "type": "sort",
       "name": "sort",
       "hidden": true,
-      "interface": "sort"
+      "interface": "sort",
+      "scopeKey": "status",
+      "uiSchema": {
+        "type": "number",
+        "title": "Sort",
+        "x-component": "Sort",
+        "x-read-pretty": true
+      }
     }
   ]
 }
