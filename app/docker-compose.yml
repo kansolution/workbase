@@ -1,0 +1,51 @@
+# NocoBase core - local development stack
+# Run from this directory: docker compose up -d
+# (docker compose automatically reads ./.env for the variables below)
+
+services:
+  app:
+    image: nocobase/nocobase:latest
+    restart: unless-stopped
+    networks:
+      - nocobase
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '127.0.0.1:13000:80'
+    environment:
+      APP_KEY: ${APP_KEY}
+      APP_ENV: ${APP_ENV:-production}
+      APP_LANG: ${APP_LANG:-en-US}
+      DB_DIALECT: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-nocobase}
+      DB_USER: ${DB_USER:-nocobase}
+      DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      # Persistent NocoBase storage (uploads, logs, plugin data, etc.)
+      - ./storage/app:/app/nocobase/storage
+      # Custom company plugin, mounted so NocoBase picks it up as a local plugin
+      - ../plugins/company-management:/app/nocobase/storage/plugins/company-management
+
+  postgres:
+    image: postgres:13
+    restart: unless-stopped
+    networks:
+      - nocobase
+    environment:
+      POSTGRES_USER: ${DB_USER:-nocobase}
+      POSTGRES_DB: ${DB_DATABASE:-nocobase}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./storage/db/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-nocobase} -d ${DB_DATABASE:-nocobase}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  nocobase:
+    driver: bridge
