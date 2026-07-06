@@ -5,7 +5,13 @@ import { registerTaskCheckinAutoGeneration } from './task-checkin-schedule';
 
 export class CompanyManagementPlugin extends Plugin {
   async load() {
-    await this.importCollections(path.resolve(__dirname, '../../collections'));
+    // `Plugin.importCollections()` is a deprecated no-op in this NocoBase
+    // version; `db.import()` is the real API, and newly registered
+    // collections still need an explicit sync since this plugin is loaded
+    // (and its collections registered) after the framework's own
+    // enable-time `db.sync()` has already run.
+    await this.db.import({ directory: path.resolve(__dirname, '../../collections') });
+    await this.db.sync();
     registerCycleAutoGeneration(this as any);
     registerTaskCheckinAutoGeneration(this as any);
   }

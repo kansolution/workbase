@@ -11,10 +11,13 @@ tương ứng với nhóm "Tổ chức & Con người" trong
 - `cycles.json` — Chu kỳ thời gian (tự tham chiếu qua `parent_cycle`)
 - `users.json` — **mở rộng** collection `users` có sẵn của NocoBase, chỉ khai
   báo các field mới (`role_level`, `department`, `team`, `position_title`,
-  `direct_manager`, `start_date`, `status`). Khi `db.import()`/`importCollections()`
-  gặp một collection đã tồn tại, các field mới được merge vào collection gốc
-  thay vì tạo bảng mới — đây là cách chuẩn để plugin mở rộng `users` mà không
-  đụng vào core.
+  `direct_manager`, `start_date`, `status`). Dùng shape
+  `{ extend: true, collectionOptions: { name: "users", fields: [...] } }` —
+  đây là điều kiện `db.import()` dùng để gọi `extendCollection()` (merge field
+  vào collection đã tồn tại) thay vì `db.collection()` (tạo/ghi đè collection
+  mới). **Không** dùng shape phẳng `{ name, fields }` cho collection đã tồn
+  tại: `db.collection()` thay thế toàn bộ definition trong bộ nhớ, có thể xoá
+  mất các field gốc của `users` (username, password, nickname...).
 - `tasks.json` — nhóm "Task" (`../../../docs/thiet-ke-he-thong-quan-ly-cong-viec-nocobase.md`
   B.4), collection `11. tasks`. `blocking_task` tự tham chiếu (`tasks`);
   `assignees`/`result_image` là `belongsToMany` (m2m/attachment) qua bảng
@@ -39,15 +42,20 @@ import path from 'node:path';
 
 class CompanyManagementPlugin extends Plugin {
   async load() {
-    await this.importCollections(path.resolve(__dirname, '../../collections'));
+    await this.db.import({ directory: path.resolve(__dirname, '../../collections') });
+    await this.db.sync();
     // ... đăng ký thêm logic khác, ví dụ registerCycleAutoGeneration (xem ../src/server)
   }
 }
 ```
 
-`this.importCollections(dir)` là helper có sẵn trên `Plugin` (tương đương
-`this.db.import({ directory: dir })`), đọc mọi file `.json`/`.js`/`.ts` trong
-thư mục và đăng ký/merge từng collection.
+`Plugin.importCollections(dir)` **là API deprecated và là no-op** trong bản
+NocoBase đang chạy trên VPS (thân hàm rỗng) — dùng thẳng
+`this.db.import({ directory: dir })`. Framework tự chạy `db.sync()` một lần
+lúc `pm.enable()`, nhưng lúc đó plugin của ta *chưa load* nên chưa có gì để
+sync; phải tự gọi `this.db.sync()` sau `db.import()` trong `load()` để bảng
+thật sự được tạo (áp dụng ở mọi lần app khởi động, không chỉ lúc enable —
+gọi lại vẫn an toàn/idempotent).
 
 ## Lưu ý khi import
 
