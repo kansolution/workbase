@@ -23,6 +23,9 @@ services:
       DB_DATABASE: ${DB_DATABASE:-nocobase}
       DB_USER: ${DB_USER:-nocobase}
       DB_PASSWORD: ${DB_PASSWORD}
+      # Needed so NocoBase symlinks storage/plugins/* into node_modules,
+      # otherwise local plugins fail to resolve with "Cannot find module".
+      NODE_MODULES_PATH: /app/nocobase/node_modules
     volumes:
       # Persistent NocoBase storage (uploads, logs, plugin data, etc.)
       - ./storage/app:/app/nocobase/storage
