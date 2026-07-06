@@ -1,6 +1,7 @@
 {
   "name": "task_checkins",
   "title": "Lượt thực hiện công việc",
+  "uiManageable": true,
   "fields": [
     {
       "type": "belongsTo",

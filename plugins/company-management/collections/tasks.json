@@ -1,6 +1,7 @@
 {
   "name": "tasks",
   "title": "Công việc",
+  "uiManageable": true,
   "fields": [
     {
       "type": "string",

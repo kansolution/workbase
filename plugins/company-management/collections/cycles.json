@@ -1,6 +1,7 @@
 {
   "name": "cycles",
   "title": "Chu kỳ thời gian",
+  "uiManageable": true,
   "fields": [
     {
       "type": "string",

@@ -1,6 +1,7 @@
 {
   "name": "projects",
   "title": "Dự án",
+  "uiManageable": true,
   "fields": [
     {
       "type": "string",

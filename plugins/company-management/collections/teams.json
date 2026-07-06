@@ -1,6 +1,7 @@
 {
   "name": "teams",
   "title": "Nhóm/Team",
+  "uiManageable": true,
   "fields": [
     {
       "type": "string",

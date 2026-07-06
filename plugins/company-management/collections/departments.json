@@ -1,6 +1,7 @@
 {
   "name": "departments",
   "title": "Phòng ban",
+  "uiManageable": true,
   "fields": [
     {
       "type": "string",

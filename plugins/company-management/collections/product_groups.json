@@ -1,6 +1,7 @@
 {
   "name": "product_groups",
   "title": "Nhóm sản phẩm",
+  "uiManageable": true,
   "fields": [
     {
       "type": "string",
