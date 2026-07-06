@@ -1,0 +1,59 @@
+{
+  "name": "departments",
+  "title": "Phòng ban",
+  "fields": [
+    {
+      "type": "string",
+      "name": "name",
+      "interface": "input",
+      "uiSchema": {
+        "type": "string",
+        "title": "Tên phòng ban",
+        "x-component": "Input",
+        "required": true
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "parent_department",
+      "target": "departments",
+      "foreignKey": "parentDepartmentId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Phòng ban cha",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "name", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "manager",
+      "target": "users",
+      "foreignKey": "managerId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Trưởng phòng",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "nickname", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "name": "description",
+      "interface": "textarea",
+      "uiSchema": {
+        "type": "string",
+        "title": "Mô tả",
+        "x-component": "Input.TextArea"
+      }
+    }
+  ]
+}

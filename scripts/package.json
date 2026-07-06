@@ -1,0 +1,11 @@
+{
+  "name": "work-nocobase-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed:org": "tsx seed-org.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0"
+  }
+}

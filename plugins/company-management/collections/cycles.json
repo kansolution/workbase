@@ -1,0 +1,104 @@
+{
+  "name": "cycles",
+  "title": "Chu kỳ thời gian",
+  "fields": [
+    {
+      "type": "string",
+      "name": "type",
+      "interface": "select",
+      "uiSchema": {
+        "type": "string",
+        "title": "Loại chu kỳ",
+        "x-component": "Select",
+        "enum": [
+          { "label": "Tuần", "value": "Tuần", "color": "blue" },
+          { "label": "Tháng", "value": "Tháng", "color": "green" },
+          { "label": "Quý", "value": "Quý", "color": "gold" },
+          { "label": "Năm", "value": "Năm", "color": "purple" }
+        ]
+      }
+    },
+    {
+      "type": "integer",
+      "name": "year",
+      "interface": "number",
+      "uiSchema": {
+        "type": "number",
+        "title": "Năm",
+        "x-component": "InputNumber"
+      }
+    },
+    {
+      "type": "integer",
+      "name": "quarter_no",
+      "allowNull": true,
+      "interface": "number",
+      "uiSchema": {
+        "type": "number",
+        "title": "Quý số",
+        "x-component": "InputNumber",
+        "x-component-props": { "min": 1, "max": 4 }
+      }
+    },
+    {
+      "type": "integer",
+      "name": "month_no",
+      "allowNull": true,
+      "interface": "number",
+      "uiSchema": {
+        "type": "number",
+        "title": "Tháng số",
+        "x-component": "InputNumber",
+        "x-component-props": { "min": 1, "max": 12 }
+      }
+    },
+    {
+      "type": "integer",
+      "name": "week_no",
+      "allowNull": true,
+      "interface": "number",
+      "uiSchema": {
+        "type": "number",
+        "title": "Tuần số",
+        "x-component": "InputNumber",
+        "x-component-props": { "min": 1, "max": 53 }
+      }
+    },
+    {
+      "type": "date",
+      "name": "start_date",
+      "interface": "date",
+      "uiSchema": {
+        "type": "string",
+        "title": "Ngày bắt đầu",
+        "x-component": "DatePicker"
+      }
+    },
+    {
+      "type": "date",
+      "name": "end_date",
+      "interface": "date",
+      "uiSchema": {
+        "type": "string",
+        "title": "Ngày kết thúc",
+        "x-component": "DatePicker"
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "parent_cycle",
+      "target": "cycles",
+      "foreignKey": "parentCycleId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Thuộc chu kỳ",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "id", "value": "id" }
+        }
+      }
+    }
+  ]
+}

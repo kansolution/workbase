@@ -1,0 +1,49 @@
+{
+  "name": "teams",
+  "title": "Nhóm/Team",
+  "fields": [
+    {
+      "type": "string",
+      "name": "name",
+      "interface": "input",
+      "uiSchema": {
+        "type": "string",
+        "title": "Tên nhóm",
+        "x-component": "Input",
+        "required": true
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "department",
+      "target": "departments",
+      "foreignKey": "departmentId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Phòng ban",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "name", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "leader",
+      "target": "users",
+      "foreignKey": "leaderId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Trưởng nhóm",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "nickname", "value": "id" }
+        }
+      }
+    }
+  ]
+}

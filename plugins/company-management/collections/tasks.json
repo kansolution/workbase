@@ -1,0 +1,243 @@
+{
+  "name": "tasks",
+  "title": "Công việc",
+  "fields": [
+    {
+      "type": "string",
+      "name": "title",
+      "interface": "input",
+      "uiSchema": {
+        "type": "string",
+        "title": "Tiêu đề",
+        "x-component": "Input",
+        "required": true
+      }
+    },
+    {
+      "type": "string",
+      "name": "task_type",
+      "interface": "select",
+      "uiSchema": {
+        "type": "string",
+        "title": "Loại công việc",
+        "x-component": "Select",
+        "required": true,
+        "enum": [
+          { "label": "Định kỳ", "value": "Định kỳ", "color": "blue" },
+          { "label": "Riêng", "value": "Riêng", "color": "green" }
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "name": "description",
+      "interface": "richText",
+      "uiSchema": {
+        "type": "string",
+        "title": "Mô tả",
+        "x-component": "RichText"
+      }
+    },
+    {
+      "type": "belongsToMany",
+      "name": "assignees",
+      "target": "users",
+      "through": "tasks_assignees",
+      "foreignKey": "taskId",
+      "otherKey": "userId",
+      "interface": "m2m",
+      "uiSchema": {
+        "type": "array",
+        "title": "Người thực hiện",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": true,
+          "fieldNames": { "label": "nickname", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "project",
+      "target": "projects",
+      "foreignKey": "projectId",
+      "targetKey": "id",
+      "allowNull": true,
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Dự án",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "name", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "string",
+      "name": "recurrence_unit",
+      "allowNull": true,
+      "interface": "select",
+      "uiSchema": {
+        "type": "string",
+        "title": "Đơn vị định kỳ",
+        "x-component": "Select",
+        "description": "Chỉ áp dụng khi task_type = Định kỳ",
+        "enum": [
+          { "label": "Ngày", "value": "Ngày", "color": "blue" },
+          { "label": "Tuần", "value": "Tuần", "color": "purple" }
+        ]
+      }
+    },
+    {
+      "type": "integer",
+      "name": "recurrence_frequency",
+      "allowNull": true,
+      "interface": "number",
+      "uiSchema": {
+        "type": "number",
+        "title": "Tần suất (số lần/tuần)",
+        "x-component": "InputNumber",
+        "x-component-props": { "min": 1 }
+      }
+    },
+    {
+      "type": "date",
+      "name": "due_date",
+      "allowNull": true,
+      "interface": "datetime",
+      "uiSchema": {
+        "type": "string",
+        "title": "Hạn hoàn thành",
+        "description": "Chỉ áp dụng khi task_type = Riêng",
+        "x-component": "DatePicker",
+        "x-component-props": { "showTime": true }
+      }
+    },
+    {
+      "type": "string",
+      "name": "priority",
+      "interface": "select",
+      "uiSchema": {
+        "type": "string",
+        "title": "Mức ưu tiên",
+        "x-component": "Select",
+        "enum": [
+          { "label": "Thấp", "value": "Thấp", "color": "default" },
+          { "label": "Trung bình", "value": "Trung bình", "color": "blue" },
+          { "label": "Cao", "value": "Cao", "color": "gold" },
+          { "label": "Khẩn cấp", "value": "Khẩn cấp", "color": "red" }
+        ]
+      }
+    },
+    {
+      "type": "string",
+      "name": "status",
+      "interface": "select",
+      "defaultValue": "Mới",
+      "uiSchema": {
+        "type": "string",
+        "title": "Trạng thái",
+        "x-component": "Select",
+        "default": "Mới",
+        "enum": [
+          { "label": "Mới", "value": "Mới", "color": "default" },
+          { "label": "Đang làm", "value": "Đang làm", "color": "blue" },
+          { "label": "Hoàn thành", "value": "Hoàn thành", "color": "green" },
+          { "label": "Quá hạn", "value": "Quá hạn", "color": "red" },
+          { "label": "Đang dừng", "value": "Đang dừng", "color": "orange" }
+        ]
+      }
+    },
+    {
+      "type": "string",
+      "name": "pause_reason",
+      "allowNull": true,
+      "interface": "select",
+      "uiSchema": {
+        "type": "string",
+        "title": "Lý do dừng",
+        "description": "Chỉ áp dụng khi status = Đang dừng",
+        "x-component": "Select",
+        "enum": [
+          { "label": "Chưa biết làm", "value": "Chưa biết làm", "color": "gold" },
+          { "label": "Yêu cầu cấp trên dừng", "value": "Yêu cầu cấp trên dừng", "color": "blue" },
+          { "label": "Chờ task khác", "value": "Chờ task khác", "color": "purple" }
+        ]
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "blocking_task",
+      "target": "tasks",
+      "foreignKey": "blockingTaskId",
+      "targetKey": "id",
+      "allowNull": true,
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Đang chờ task",
+        "description": "Dùng khi pause_reason = Chờ task khác",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "title", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "string",
+      "name": "result_link",
+      "allowNull": true,
+      "interface": "url",
+      "uiSchema": {
+        "type": "string",
+        "title": "Link kết quả",
+        "x-component": "Input.URL"
+      }
+    },
+    {
+      "type": "belongsToMany",
+      "name": "result_image",
+      "target": "attachments",
+      "through": "tasks_result_image",
+      "foreignKey": "taskId",
+      "otherKey": "attachmentId",
+      "allowNull": true,
+      "interface": "attachment",
+      "uiSchema": {
+        "type": "array",
+        "title": "Ảnh kết quả",
+        "x-component": "Upload.Attachment",
+        "x-component-props": { "multiple": true }
+      }
+    },
+    {
+      "type": "text",
+      "name": "notes",
+      "allowNull": true,
+      "interface": "textarea",
+      "uiSchema": {
+        "type": "string",
+        "title": "Ghi chú",
+        "x-component": "Input.TextArea"
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "created_by",
+      "target": "users",
+      "foreignKey": "createdById",
+      "targetKey": "id",
+      "interface": "createdBy",
+      "uiSchema": {
+        "title": "Người tạo",
+        "x-component": "AssociationField",
+        "x-read-pretty": true,
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "nickname", "value": "id" }
+        }
+      }
+    }
+  ]
+}

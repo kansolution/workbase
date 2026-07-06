@@ -1,0 +1,103 @@
+{
+  "name": "users",
+  "fields": [
+    {
+      "type": "string",
+      "name": "role_level",
+      "interface": "select",
+      "uiSchema": {
+        "type": "string",
+        "title": "Cấp bậc",
+        "x-component": "Select",
+        "enum": [
+          { "label": "Nhân viên", "value": "Nhân viên", "color": "default" },
+          { "label": "Quản lý team", "value": "Quản lý team", "color": "blue" },
+          { "label": "Quản lý bộ phận", "value": "Quản lý bộ phận", "color": "gold" },
+          { "label": "Admin-Giám đốc", "value": "Admin-Giám đốc", "color": "red" }
+        ]
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "department",
+      "target": "departments",
+      "foreignKey": "departmentId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Phòng ban",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "name", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "team",
+      "target": "teams",
+      "foreignKey": "teamId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Nhóm/Team",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "name", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "string",
+      "name": "position_title",
+      "interface": "input",
+      "uiSchema": {
+        "type": "string",
+        "title": "Chức danh",
+        "x-component": "Input"
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "direct_manager",
+      "target": "users",
+      "foreignKey": "directManagerId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Quản lý trực tiếp",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "nickname", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "date",
+      "name": "start_date",
+      "interface": "date",
+      "uiSchema": {
+        "type": "string",
+        "title": "Ngày vào làm",
+        "x-component": "DatePicker"
+      }
+    },
+    {
+      "type": "string",
+      "name": "status",
+      "interface": "select",
+      "uiSchema": {
+        "type": "string",
+        "title": "Trạng thái",
+        "x-component": "Select",
+        "enum": [
+          { "label": "Đang làm việc", "value": "Đang làm việc", "color": "green" },
+          { "label": "Đã nghỉ", "value": "Đã nghỉ", "color": "red" }
+        ]
+      }
+    }
+  ]
+}

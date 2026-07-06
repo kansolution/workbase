@@ -1,0 +1,68 @@
+{
+  "name": "product_groups",
+  "title": "Nhóm sản phẩm",
+  "fields": [
+    {
+      "type": "string",
+      "name": "name",
+      "interface": "input",
+      "uiSchema": {
+        "type": "string",
+        "title": "Tên nhóm sản phẩm",
+        "x-component": "Input",
+        "required": true
+      }
+    },
+    {
+      "type": "belongsTo",
+      "name": "owner",
+      "target": "users",
+      "foreignKey": "ownerId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Người phụ trách",
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "nickname", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "name": "usp",
+      "interface": "richText",
+      "uiSchema": {
+        "type": "string",
+        "title": "USP",
+        "x-component": "RichText"
+      }
+    },
+    {
+      "type": "belongsToMany",
+      "name": "target_persona",
+      "target": "attachments",
+      "through": "product_groups_target_persona",
+      "foreignKey": "productGroupId",
+      "otherKey": "attachmentId",
+      "interface": "attachment",
+      "uiSchema": {
+        "type": "array",
+        "title": "Chân dung khách hàng",
+        "x-component": "Upload.Attachment",
+        "x-component-props": { "multiple": true }
+      }
+    },
+    {
+      "type": "text",
+      "name": "description",
+      "interface": "textarea",
+      "uiSchema": {
+        "type": "string",
+        "title": "Mô tả",
+        "x-component": "Input.TextArea"
+      }
+    }
+  ]
+}

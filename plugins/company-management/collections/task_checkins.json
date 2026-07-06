@@ -1,0 +1,89 @@
+{
+  "name": "task_checkins",
+  "title": "Lượt thực hiện công việc",
+  "fields": [
+    {
+      "type": "belongsTo",
+      "name": "task",
+      "target": "tasks",
+      "foreignKey": "taskId",
+      "targetKey": "id",
+      "interface": "m2o",
+      "uiSchema": {
+        "title": "Công việc",
+        "required": true,
+        "x-component": "AssociationField",
+        "x-component-props": {
+          "multiple": false,
+          "fieldNames": { "label": "title", "value": "id" }
+        }
+      }
+    },
+    {
+      "type": "date",
+      "name": "checkin_date",
+      "interface": "date",
+      "uiSchema": {
+        "type": "string",
+        "title": "Ngày thực hiện",
+        "required": true,
+        "x-component": "DatePicker"
+      }
+    },
+    {
+      "type": "string",
+      "name": "status",
+      "interface": "select",
+      "defaultValue": "Chưa làm",
+      "uiSchema": {
+        "type": "string",
+        "title": "Trạng thái",
+        "x-component": "Select",
+        "default": "Chưa làm",
+        "enum": [
+          { "label": "Hoàn thành", "value": "Hoàn thành", "color": "green" },
+          { "label": "Chưa làm", "value": "Chưa làm", "color": "default" },
+          { "label": "Bỏ qua", "value": "Bỏ qua", "color": "orange" }
+        ]
+      }
+    },
+    {
+      "type": "string",
+      "name": "result_link",
+      "allowNull": true,
+      "interface": "url",
+      "uiSchema": {
+        "type": "string",
+        "title": "Link kết quả",
+        "x-component": "Input.URL"
+      }
+    },
+    {
+      "type": "belongsToMany",
+      "name": "result_image",
+      "target": "attachments",
+      "through": "task_checkins_result_image",
+      "foreignKey": "taskCheckinId",
+      "otherKey": "attachmentId",
+      "allowNull": true,
+      "interface": "attachment",
+      "uiSchema": {
+        "type": "array",
+        "title": "Ảnh kết quả",
+        "x-component": "Upload.Attachment",
+        "x-component-props": { "multiple": true }
+      }
+    },
+    {
+      "type": "text",
+      "name": "notes",
+      "allowNull": true,
+      "interface": "textarea",
+      "uiSchema": {
+        "type": "string",
+        "title": "Ghi chú",
+        "x-component": "Input.TextArea"
+      }
+    }
+  ]
+}
