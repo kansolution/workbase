@@ -51,6 +51,11 @@ tương ứng với nhóm "Tổ chức & Con người" trong
   (`@nocobase/plugin-field-formula`, xem `dist/server/formula-field.js` trong
   container để đối chiếu shape field nếu cần sửa), không cần workflow. Biểu
   thức: `target_value > 0 ? round(current_value / target_value * 100) : 0`.
+  ⚠️ Field `formula` chỉ tự tính khi ghi qua Sequelize model (`beforeSave`/
+  `beforeBulkCreate` hook) — record tạo bằng `INSERT` SQL thẳng (như seed demo
+  ở phiên này) sẽ có `progress = NULL` cho tới khi `UPDATE` lại thủ công 1
+  lần; record tạo qua REST API/Admin UI sau này tự tính đúng ngay, không cần
+  lo.
 
 ## Cách nạp vào plugin
 
