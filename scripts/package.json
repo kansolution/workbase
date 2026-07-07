@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "seed:org": "tsx seed-org.ts"
+    "seed:org": "tsx seed-org.ts",
+    "seed:okr": "tsx seed-okr.ts"
   },
   "devDependencies": {
     "tsx": "^4.7.0"

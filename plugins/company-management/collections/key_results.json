@@ -136,6 +136,21 @@
       }
     },
     {
+      "type": "formula",
+      "name": "progress",
+      "dataType": "double",
+      "expression": "target_value > 0 ? round(current_value / target_value * 100) : 0",
+      "interface": "formula",
+      "uiSchema": {
+        "type": "number",
+        "title": "% Hoàn thành",
+        "description": "Tự tính từ current_value / target_value (trong cùng record, không cần workflow).",
+        "x-component": "Formula",
+        "x-read-pretty": true,
+        "x-component-props": { "addonAfter": "%" }
+      }
+    },
+    {
       "type": "boolean",
       "name": "is_manual_input",
       "hidden": true,

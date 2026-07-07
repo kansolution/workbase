@@ -45,7 +45,12 @@ tương ứng với nhóm "Tổ chức & Con người" trong
   tay `current_value` (thường chỉ áp dụng cấp Công ty); KR cấp Team/Phòng ban
   sẽ luôn bị rollup tự động ghi đè ở Session 7, field này chỉ đánh dấu để
   ràng buộc UI (linkage rule) làm ở session sau, chưa áp dụng ràng buộc thật
-  trong session này.
+  trong session này. `progress` **là** field kiểu `formula` thật (khác với
+  `objectives.progress_percent`) — dùng được vì `current_value`/`target_value`
+  nằm cùng 1 record nên NocoBase tự tính bằng math.js
+  (`@nocobase/plugin-field-formula`, xem `dist/server/formula-field.js` trong
+  container để đối chiếu shape field nếu cần sửa), không cần workflow. Biểu
+  thức: `target_value > 0 ? round(current_value / target_value * 100) : 0`.
 
 ## Cách nạp vào plugin
 
