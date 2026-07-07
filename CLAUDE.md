@@ -118,6 +118,51 @@ Lưu ý quan trọng đã rút ra khi scaffold plugin lần đầu (2026-07-06):
 
 (mới nhất ở trên)
 
+- **2026-07-07 (phiên 4)**: Dựng nhóm "OKR" (Phần B.2) trên production qua
+  SSH trực tiếp (không có TS toolchain/docker cục bộ, dùng script Python +
+  paramiko để chạy lệnh qua SSH vì máy này không có `sshpass`/`plink`).
+  Thêm `collections/objectives.json` (tự tham chiếu qua `parent_objective`
+  để phân rã Công ty → Phòng ban → Team; có field `sort` hidden +
+  `scopeKey: "status"` ngay từ đầu để Kanban kéo-thả hoạt động, tránh lặp lại
+  lỗi đã gặp với `tasks` ở phiên 3) và `collections/key_results.json` (có
+  field ẩn `is_manual_input` để đánh dấu KR được phép nhập tay, phục vụ ràng
+  buộc UI ở session sau). Build `dist/` tay trong container VPS theo đúng quy
+  trình đã tài liệu hoá, verify bảng + metadata `collections`/`fields` tạo
+  đúng qua `psql`, không có lỗi khi restart app.
+
+  Phát hiện thêm 1 field type mới hữu ích: `key_results.progress` dùng
+  **field kiểu `formula` thật** của NocoBase (`@nocobase/plugin-field-formula`,
+  engine math.js) — khác với `objectives.progress_percent` (chỉ là field số
+  thường, "tạm để 0", vì rollup có trọng số cần đọc dữ liệu từ collection
+  khác nên phải chờ workflow ở Session 7). `progress` tính được ngay trong
+  1 record (`current_value`/`target_value` cùng bảng) nên dùng formula thật
+  luôn, không cần đợi workflow. Lưu ý quan trọng rút ra: field `formula` chỉ
+  tự tính khi ghi qua Sequelize model (`beforeSave` hook) — record tạo bằng
+  `INSERT` SQL thẳng thì `progress` bị `NULL`, phải `UPDATE` lại thủ công 1
+  lần cho dữ liệu demo (đã làm); dữ liệu tạo qua Admin UI/REST API sau này tự
+  tính đúng, không bị vấn đề này.
+
+  Viết `scripts/seed-okr.ts` (qua REST API, theo mẫu `seed-org.ts`, độc lập
+  với script đó — tự tạo 3 user chủ sở hữu tối thiểu, dùng chung
+  email/nickname với `DEMO_USERS` của `seed-org.ts` và kiểm tra tồn tại theo
+  email trước khi tạo nên chạy trước/sau `seed-org.ts` đều không trùng), commit
+  vào git để dùng sau. Nhưng **không dùng script này để seed** — chưa có
+  credentials tài khoản admin của production (chỉ có SSH root + DB root, không
+  có mật khẩu admin app), nên theo lựa chọn của user, đã seed demo trực tiếp
+  qua `INSERT` SQL tương đương (1 Objective Công ty "Tăng trưởng doanh thu và
+  năng lực vận hành Quý 3/2026" → 2 Objective Phòng ban Kinh doanh/Kỹ thuật →
+  5 Key Result), xoá file SQL tạm sau khi chạy xong.
+
+  Viết `plugins/company-management/docs/okr-page-setup.md` hướng dẫn dựng
+  trang "OKR Quý" (Table lọc cycle/level/product_group + Kanban group theo
+  status + Detail có sub-table `key_results`) — **chưa thực sự tạo trang**,
+  vì page/block là UI Schema runtime phải thao tác qua Admin UI trong trình
+  duyệt (giống page "Công việc của tôi" ở phiên 3), mà phiên này chỉ có SSH,
+  không có trình duyệt. Cũng ghi chú rõ: NocoBase không có sẵn component
+  "progress bar" trực quan cho field formula — mục "chi tiết" trong hướng dẫn
+  chỉ hiện số `%`, muốn thanh tiến độ thật cần thử nghiệm thêm (Markdown block
+  + CSS, chưa xác nhận hoạt động với sub-table).
+
 - **2026-07-06 (phiên 3)**: Bật plugin lên production lần đầu làm sập cả
   admin app ("Script error" RequireJS) vì plugin chỉ có code server, thiếu
   hẳn `dist/client/index.js` — client admin cố tải bundle này cho MỌI plugin
@@ -190,8 +235,11 @@ Lưu ý quan trọng đã rút ra khi scaffold plugin lần đầu (2026-07-06):
 - [ ] (Tuỳ chọn) Ẩn/hiện field `pause_reason` theo `status` trên form task —
       cần viết JS tuỳ chỉnh qua "Execute JavaScript" trong Block linkage
       rules (bản NocoBase này không có action ẩn/hiện field riêng lẻ có sẵn)
-- [ ] Dựng nhóm OKR (`objectives`, `key_results`) — bước 3 trong thứ tự triển
-      khai đề xuất (Phần G của design doc)
+- [ ] Tạo trang "OKR Quý" qua Admin UI (Table + Kanban + Detail/sub-table
+      `key_results`) theo hướng dẫn từng bước ở
+      `plugins/company-management/docs/okr-page-setup.md` — collections
+      `objectives`/`key_results` đã deploy xong (phiên 4) nhưng trang chưa
+      dựng vì cần thao tác trong trình duyệt (phiên 4 chỉ có SSH)
 - [ ] Dựng nhóm KPI (`kpi_registrations`, `kpi_summaries`) + workflow duyệt
       KPI — bước 4
 - [ ] Thay `projects.json` stub bằng bản đầy đủ (product_group, key_result,
