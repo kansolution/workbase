@@ -17,6 +17,8 @@ const UI_MANAGEABLE_COLLECTIONS = [
     'tasks',
     'task_checkins',
     'projects',
+    'objectives',
+    'key_results',
 ];
 class CompanyManagementPlugin extends server_1.Plugin {
     async load() {
